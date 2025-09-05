@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# Don't let any errors slip through the cracks, as they can potentially render
+# backups useless.
+set -eu
+
+# Ensure the configuration file was passed.
+if [ $# -lt 2 ]; then
+	echo "Usage: $0 <config file> <command> ..." 1>&2
+	exit 1
+fi
+
+# The first argument is the path to the configuration file to use. The remaining
+# ones describe the command to run.
+cyborg_config="$1"
+shift
+
+# Check if the configuration file is readable.
+if [ ! -r "$cyborg_config" ]; then
+	echo "Error: $cyborg_config doesn't exist or is unreadable" 1>&2
+	exit 1
+fi
+
+# Load the configuration file and assign default variable values. The
+# configuration file name is stored in a variable for future reference.
+# shellcheck source=/dev/null
+. "${cyborg_config}"
+
+# Ensure whether the required variables are present.
+if [ -z "${BORG_REPO-}" ]; then
+	echo "Error: $cyborg_config MUST set BORG_REPO to a non-empty value" 1>&2
+	exit 1
+fi
+
+# Assign default variable values.
+: "${BORG:=borg}"
+: "${BORG_EXIT_CODES:=modern}"
+
+# Export the variables that are used by subsequent borg invocations. References
+# to undefined variables must be temporarily allowed as the configuration file
+# isn't guaranteed to define them.
+set +u
+export BORG_REPO BORG_PASSPHRASE BORG_PASSCOMMAND BORG_PASSPHRASE_FD BORG_REMOTE_PATH BORG_RSH BORG_BASE_DIR
+set -u
+
+case "$1"
+in auto)
+	if [ $# -ne 1 ]; then
+		echo "Usage: $0 auto" 1>&2
+		exit 1
+	fi
+
+	if [ -z "${CYBORG_AUTO_CREATE+defined}" ]; then
+		echo "Error: $cyborg_config MUST define CYBORG_AUTO_CREATE" 1>&2
+		exit 1
+	fi
+	if [ -z "${CYBORG_AUTO_PRUNE+defined}" ]; then
+		echo "Error: $cyborg_config MUST define CYBORG_AUTO_PRUNE" 1>&2
+		exit 1
+	fi
+
+	# Disable globbing, but keep word splitting, so that arguments defined in the
+	# configuration file are passed correctly.
+	set -f
+	# shellcheck disable=SC2086
+	${BORG} create ${CYBORG_AUTO_CREATE}
+	# shellcheck disable=SC2086
+	${BORG} prune ${CYBORG_AUTO_PRUNE}
+	set +f
+
+	${BORG} compact
+
+	;;
+
+*)
+	# Run borg with the requested parameters.
+	${BORG} "$@"
+	;;
+esac

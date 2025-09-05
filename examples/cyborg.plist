@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.myuser.cyborg</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/Users/myuser/Projects/cyborg/cyborg</string>
+      <string>/Users/myuser/.config/cyborg/offsite.conf</string>
+      <string>auto</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/myuser</string>
+
+    <key>StandardOutPath</key>
+    <string>/Users/myuser/.config/cyborg/cyborg.stdout</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/myuser/.config/cyborg/cyborg.stderr</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/local/bin:/opt/local/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StartInterval</key>
+    <integer>1800</integer>
+  </dict>
+</plist>

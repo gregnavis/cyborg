@@ -1,0 +1,51 @@
+# Consult the borg documentation to understand the format of this file:
+#
+# https://borgbackup.readthedocs.io/en/stable/usage/help.html
+
+# Directories that should be backed up recursively. Alternatively, the entire
+# home directory could be backed up.
+
+# Some important directories that could be hard to reproduce without backups.
+R /Users/myuser/.aws
+R /Users/myuser/.config
+R /Users/myuser/.hammerspoon
+R /Users/myuser/.local/share/fish
+R /Users/myuser/.ssh
+
+# Backup iPhone-to-Mac backups.
+R /Users/myuser/Library/Application Support/MobileSync/Backup
+
+# Generic operating system directories.
+R /Users/myuser/Desktop
+R /Users/myuser/Documents
+R /Users/myuser/Downloads
+R /Users/myuser/Music
+R /Users/myuser/Pictures
+
+# User-specific directories.
+R /Users/myuser/Projects
+
+# The list below contains per-path handling instructions:
+#
+# ! - don't back up the entire subtree
+#
+
+# Skip MacOS-specific files.
+! **/.DS_Store
+
+# Skip content of any temporary and log directories, but retain .keep files.
++ **/.keep
+! **/tmp/
+! **/log/
+
+# Installed packages can be reinstalled
+! **/.venv
+! **/node_modules
+! **/.gems
+! **/.terraform
+
+# Skip precompiled Python modules.
+! **/*.pyc
+
+# Skip any caches not skipped by borg automatically.
+! **/.jekyll-cache
