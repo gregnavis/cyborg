@@ -21,6 +21,12 @@ if [ ! -r "$cyborg_config" ]; then
 	exit 1
 fi
 
+# Define the precondition function that allows the backup to proceed. Any custom
+# rules can be defined in the configuration file.
+CYBORG_AUTO_PRECONDITION() {
+	return 0
+}
+
 # Load the configuration file and assign default variable values. The
 # configuration file name is stored in a variable for future reference.
 # shellcheck source=/dev/null
@@ -56,6 +62,11 @@ in auto)
 	fi
 	if [ -z "${CYBORG_AUTO_PRUNE+defined}" ]; then
 		echo "Error: $cyborg_config MUST define CYBORG_AUTO_PRUNE" 1>&2
+		exit 1
+	fi
+
+	if ! CYBORG_AUTO_PRECONDITION; then
+		echo "Error: CYBORG_AUTO_PRECONDITION not met; auto cannot proceed" 1>&2
 		exit 1
 	fi
 
